@@ -1,53 +1,60 @@
 require 'uinput/device'
+require 'xkbcommon'
 require "uinput/keyboard/version"
 require 'uinput/keyboard/factory'
 
 module Uinput
   class Keyboard < Device
-    def press(keys)
-      keys.split('+').each{ |key| send_key_event(key, state: 1) }
-      send_syn_event
-    end
-
-    def release(keys)
-      keys.split('+').each{ |key| send_key_event(key, state: 0) }
-      send_syn_event
-    end
-
-    def tap(keys)
-      press(keys)
-      release(keys)
-    end
-
-    def type(text)
-      text.chars.each do |char|
-        keys_to_produce(char)
+    class << self
+      def keymap(names)
+        Xkbcommon::Context.new.keymap_from_names(names)
       end
     end
 
-    def send_key_event(key, state: 1)
-      send_event(EV_KEY, key_code(key), state)
+    def initialize(keymap, &block)
+      @keymap = keymap
+      super(&block)
     end
 
-    def keymap
-      # Todo: get the currently active keymap, not system's default
-      @keymap ||= Xkbcommon::Context.new.default_keymap
+    attr_accessor :keymap
+
+    def press(*symbols)
+      symbols_to_keys(*symbols).each{ |key| send_key_event(key.scan_code, state: 1) }
+      send_syn_event
+    end
+
+    def release(*symbols)
+      symbols_to_keys(*symbols).each{ |key| send_key_event(key.scan_code, state: 0) }
+      send_syn_event
+    end
+
+    def tap(*symbols)
+      press(*symbols)
+      release(*symbols)
+    end
+
+    def type(string)
+      string_to_symbol_chain(string).each{ |symbols| tap(*symbols) }
+    end
+
+    def send_key_event(scan_code, state: 1)
+      send_event(EV_KEY, scan_code, state)
     end
 
     private
 
-    ALIASES = {
-      ctrl: :leftctrl,
-      shift: :leftshift,
-      alt: :leftalt
-    }
-
-    def alias_for(key)
-      ALIASES[key.downcase.to_sym] || key
+    def symbols_to_keys(*symbols)
+      [*symbols].flat_map{ |symbol| @keymap.symbols[symbol.to_sym].keys }
     end
 
-    def key_code(key)
-      Uinput.const_get("KEY_#{alias_for(key).upcase}")
+    def char_to_symbol(char)
+      @keymap.characters[char].name
+    rescue
+      raise "invalid character '#{char}' for keymap"
+    end
+
+    def string_to_symbol_chain(string)
+      string.chars.map{ |char| char_to_symbol(char) }
     end
   end
 end

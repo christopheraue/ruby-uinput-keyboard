@@ -3,9 +3,14 @@ require 'bundler/setup'
 require 'uinput/keyboard'
 
 begin
-  keyboard = Uinput::Keyboard.create
+  keymap = Uinput::Keyboard.keymap(rules: 'evdev', model: 'pc104', layout: 'de', variant: 'nodeadkeys')
+  keyboard = Uinput::Keyboard.new(keymap)
+
   sleep 1
-  ('a'..'z').each{ |char| keyboard.tap(char) }
+
+  keyboard.type('ö ü ä')
+  #('a'..'z').each{ |char| keyboard.tap(char) }
+  keyboard.tap(:Return)
 ensure
   keyboard.destroy if keyboard
 end
