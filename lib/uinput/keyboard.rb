@@ -29,6 +29,11 @@ module Uinput
       send_event(EV_KEY, key_code(key), state)
     end
 
+    def keymap
+      # Todo: get the currently active keymap, not system's default
+      @keymap ||= Xkbcommon::Context.new.default_keymap
+    end
+
     private
 
     ALIASES = {
