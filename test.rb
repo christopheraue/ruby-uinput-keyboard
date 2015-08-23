@@ -8,9 +8,10 @@ begin
 
   sleep 1
 
-  keyboard.type('ö ü ä')
+  keyboard.type('This is a string')
+  #keyboard.type('Ѣ')
   #('a'..'z').each{ |char| keyboard.tap(char) }
-  keyboard.tap(:Return)
+  #keyboard.tap(:UndefinedKeySym)
 ensure
   keyboard.destroy if keyboard
 end

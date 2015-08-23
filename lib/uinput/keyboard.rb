@@ -34,7 +34,7 @@ module Uinput
     end
 
     def type(string)
-      string_to_symbol_chain(string).each{ |symbols| tap(*symbols) }
+      string_to_symbols(string).each{ |symbols| tap(*symbols) }
     end
 
     def send_key_event(scan_code, state: 1)
@@ -43,18 +43,20 @@ module Uinput
 
     private
 
-    def symbols_to_keys(*symbols)
-      [*symbols].flat_map{ |symbol| @keymap.symbols[symbol.to_sym].keys }
+    def symbols_to_keys(*names)
+      [*names].flat_map{ |name| symbol(name).keys }
+    end
+
+    def string_to_symbols(string)
+      string.chars.map{ |char| char_to_symbol(char).name }
+    end
+
+    def symbol(name)
+      @keymap.symbols[name.to_sym] or raise Device::Error.new("no keysym '#{name}' in keymap")
     end
 
     def char_to_symbol(char)
-      @keymap.characters[char].name
-    rescue
-      raise "invalid character '#{char}' for keymap"
-    end
-
-    def string_to_symbol_chain(string)
-      string.chars.map{ |char| char_to_symbol(char) }
+      @keymap.characters[char] or raise Device::Error.new("no character '#{char}' in keymap")
     end
   end
 end
