@@ -9,6 +9,8 @@ begin
   sleep 1
 
   keyboard.type('This is a string')
+  keyboard.tap(:Return)
+
   #keyboard.type('Ѣ')
   #('a'..'z').each{ |char| keyboard.tap(char) }
   #keyboard.tap(:UndefinedKeySym)
