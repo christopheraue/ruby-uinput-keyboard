@@ -8,7 +8,7 @@ begin
 
   sleep 1
 
-  keyboard.type('This is a string')
+  keyboard.type('date')
   keyboard.tap(:Return)
 
   #keyboard.type('Ѣ')
