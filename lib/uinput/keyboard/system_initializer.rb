@@ -3,8 +3,9 @@ module Uinput
     class SystemInitializer < Device::SystemInitializer
       def initialize(keyboard, &block)
         @keyboard = keyboard
-        super(&block)
-        receive_key_events
+        super(keyboard, &block)
+        add_event(:EV_KEY)
+        add_event(:EV_SYN)
         add_all_keys
       end
 

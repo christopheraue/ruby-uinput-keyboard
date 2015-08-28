@@ -1,7 +1,8 @@
+require 'bundler/setup'
 require 'uinput/device'
 require 'xkbcommon'
 require "uinput/keyboard/version"
-require 'uinput/keyboard/factory'
+require 'uinput/keyboard/system_initializer'
 
 module Uinput
   class Keyboard < Device
@@ -19,13 +20,17 @@ module Uinput
     attr_accessor :keymap
 
     def press(*symbols)
-      symbols_to_keys(*symbols).each{ |key| send_key_event(key.scan_code, state: 1) }
-      send_syn_event
+      symbols_to_keys(*symbols).each do |key|
+        send_event(:EV_KEY, key.scan_code, 1)
+      end
+      send_event(:EV_SYN, :SYN_REPORT)
     end
 
     def release(*symbols)
-      symbols_to_keys(*symbols).each{ |key| send_key_event(key.scan_code, state: 0) }
-      send_syn_event
+      symbols_to_keys(*symbols).each do |key|
+        send_event(:EV_KEY, key.scan_code, 0)
+      end
+      send_event(:EV_SYN, :SYN_REPORT)
     end
 
     def tap(*symbols)
@@ -35,10 +40,6 @@ module Uinput
 
     def type(string)
       string_to_symbols(string).each{ |symbols| tap(*symbols) }
-    end
-
-    def send_key_event(scan_code, state: 1)
-      send_event(EV_KEY, scan_code, state)
     end
 
     private

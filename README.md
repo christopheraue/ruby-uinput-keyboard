@@ -1,6 +1,6 @@
 # Uinput::Keyboard
 
-Ruby wrapper around uinput to create a virtual keyboard.
+Ruby wrapper around uinput to create a virtual keyboard from an xkb keymap.
 
 ## Installation
 
@@ -29,9 +29,9 @@ begin
 
     sleep 1 # to give linux time to setup the new device
 
-    # While a terminal has focus
-    keyboard.type('date') # => $ date
-    keyboard.tap(:Return) # => Sun Aug 23 22:57:28 CEST 2015
+    # While pasting this code into irb
+    keyboard.type('Time.now')   # types 'Time.now'
+    keyboard.tap(:Return)       # presses the Return key and returns the timestamp
 ensure
     keyboard.destroy if keyboard
 end
