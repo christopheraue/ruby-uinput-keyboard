@@ -39,7 +39,12 @@ module Uinput
     end
 
     def type(string)
-      string_to_symbols(string).each{ |symbols| tap(*symbols) }
+      # prevent dropped key events (b/c of evdev buffer overflow?) by sending
+      # out the event chain in chunks rather than in one piece
+      string_to_symbols(string).each_slice(8) do |symbols|
+        symbols.each{ |symbol| tap(symbol) }
+        sleep 0.01 # time to breath
+      end
     end
 
     private
