@@ -20,17 +20,21 @@ module Uinput
     attr_accessor :keymap
 
     def press(*symbols)
-      symbols_to_keys(*symbols).each do |key|
+      keys = symbols_to_keys(*symbols)
+      keys.each do |key|
         send_event(:EV_KEY, key.scan_code, 1)
       end
       send_event(:EV_SYN, :SYN_REPORT)
+      keys.map(&:code)
     end
 
     def release(*symbols)
-      symbols_to_keys(*symbols).each do |key|
+      keys = symbols_to_keys(*symbols)
+      keys.each do |key|
         send_event(:EV_KEY, key.scan_code, 0)
       end
       send_event(:EV_SYN, :SYN_REPORT)
+      keys.map(&:code)
     end
 
     def tap(*symbols)
@@ -41,10 +45,12 @@ module Uinput
     def type(string)
       # prevent dropped key events (b/c of evdev buffer overflow?) by sending
       # out the event chain in chunks rather than in one piece
+      keycodes = []
       string_to_symbols(string).each_slice(8) do |symbols|
-        symbols.each{ |symbol| tap(symbol) }
+        keycodes += symbols.flat_map{ |symbol| tap(symbol) }
         sleep 0.01 # time to breath
       end
+      keycodes
     end
 
     private
