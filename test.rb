@@ -1,5 +1,4 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'lib'))
-require 'bundler/setup'
 require 'uinput/keyboard'
 
 begin
@@ -7,6 +6,9 @@ begin
   keyboard = Uinput::Keyboard.new(keymap)
 
   sleep 1
+
+  puts keyboard.sys_path
+  puts keyboard.dev_path
 
   keyboard.type('date')
   keyboard.tap(:Return)
