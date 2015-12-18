@@ -47,7 +47,7 @@ module Uinput
       # out the event chain in chunks rather than in one piece
       keycodes = []
       string_to_symbols(string).each_slice(8) do |symbols|
-        keycodes += symbols.flat_map{ |symbol| tap(symbol) }
+        keycodes += symbols.map{ |symbol| tap(symbol) }
         sleep 0.01 # time to breath
       end
       keycodes

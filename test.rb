@@ -10,8 +10,8 @@ begin
   puts keyboard.sys_path
   puts keyboard.dev_path
 
-  keyboard.type('date')
-  keyboard.tap(:Return)
+  puts keyboard.type('date').inspect
+  puts keyboard.tap(:Return).inspect
 
   #keyboard.type('Ѣ')
   #('a'..'z').each{ |char| keyboard.tap(char) }
