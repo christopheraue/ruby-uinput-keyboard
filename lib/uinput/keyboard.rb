@@ -20,21 +20,25 @@ module Uinput
     attr_accessor :keymap
 
     def press(*symbols)
-      keys = symbols_to_keys(*symbols)
-      keys.each do |key|
-        send_event(:EV_KEY, key.scan_code, 1)
+      symbols.flat_map do |symbol|
+        symbol(symbol).keys.map do |key|
+          send_event(:EV_KEY, key.scan_code, 1)
+          key.code
+        end.tap do
+          send_event(:EV_SYN, :SYN_REPORT)
+        end
       end
-      send_event(:EV_SYN, :SYN_REPORT)
-      keys.map(&:code)
     end
 
     def release(*symbols)
-      keys = symbols_to_keys(*symbols)
-      keys.each do |key|
-        send_event(:EV_KEY, key.scan_code, 0)
+      symbols.flat_map do |symbol|
+        symbol(symbol).keys.map do |key|
+          send_event(:EV_KEY, key.scan_code, 0)
+          key.code
+        end.tap do
+          send_event(:EV_SYN, :SYN_REPORT)
+        end
       end
-      send_event(:EV_SYN, :SYN_REPORT)
-      keys.map(&:code)
     end
 
     def tap(*symbols)
@@ -54,22 +58,14 @@ module Uinput
     end
 
     def symbols_to_keycodes(*names)
-      symbols_to_keys(*names).map(&:code)
-    end
-
-    def string_to_keycodes(string)
-      string_to_symbols(string).map{ |symbols| symbols_to_keycodes(*symbols) }
-    end
-
-    private
-
-    def symbols_to_keys(*names)
-      [*names].flat_map{ |name| symbol(name).keys }
+      names.map{ |name| symbol(name).keys.map(&:code) }
     end
 
     def string_to_symbols(string)
       string.chars.map{ |char| char_to_symbol(char).name }
     end
+
+    private
 
     def symbol(name)
       @keymap.symbols[name.to_sym] or raise Device::Error.new("no keysym '#{name}' in keymap")

@@ -10,11 +10,11 @@ begin
   puts keyboard.sys_path
   puts keyboard.dev_path
 
-  puts keyboard.string_to_keycodes('DaTe!').inspect
-  puts keyboard.symbols_to_keycodes(:Shift_L, :d).inspect
+  symbols = keyboard.string_to_symbols('DaTe!')
+  puts symbols.inspect
+  puts keyboard.symbols_to_keycodes(*symbols).inspect
 
   puts keyboard.type('date').inspect
-
   puts keyboard.tap(:Return).inspect
 
   #keyboard.type('Ѣ')
