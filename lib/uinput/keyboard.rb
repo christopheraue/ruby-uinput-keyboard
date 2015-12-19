@@ -53,6 +53,14 @@ module Uinput
       keycodes
     end
 
+    def symbols_to_keycodes(*names)
+      symbols_to_keys(*names).map(&:code)
+    end
+
+    def string_to_keycodes(string)
+      string_to_symbols(string).map{ |symbols| symbols_to_keycodes(*symbols) }
+    end
+
     private
 
     def symbols_to_keys(*names)
