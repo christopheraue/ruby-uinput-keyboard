@@ -1,11 +1,11 @@
-require 'bundler/setup'
 require 'uinput/device'
 require 'xkbcommon'
-require "uinput/keyboard/version"
-require 'uinput/keyboard/system_initializer'
 
 module Uinput
   class Keyboard < Device
+    require_relative "keyboard/version"
+    require_relative 'keyboard/initializer'
+
     class << self
       def keymap(names)
         Xkbcommon::Context.new.keymap_from_names(names)

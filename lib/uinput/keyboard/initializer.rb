@@ -1,6 +1,6 @@
 module Uinput
-  class Keyboard < Device
-    class SystemInitializer < Device::SystemInitializer
+  class Keyboard
+    class Initializer < Device::Initializer
       def initialize(keyboard, &block)
         @keyboard = keyboard
         super(keyboard, &block)
