@@ -5,7 +5,7 @@ require 'uinput/keyboard/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "uinput-keyboard"
-  spec.version       = Uinput::Keyboard_VERSION
+  spec.version       = Uinput::Keyboard::VERSION
   spec.authors       = ["Christopher Aue"]
   spec.email         = ["mail@christopheraue.net"]
 

@@ -1,3 +1,5 @@
 module Uinput
-  Keyboard_VERSION = "0.3"
+  class Keyboard
+    VERSION = "0.3.1"
+  end
 end
