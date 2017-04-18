@@ -1,11 +1,8 @@
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'lib'))
-require 'uinput/keyboard'
+require_relative 'lib/uinput/keyboard'
 
 begin
   keymap = Uinput::Keyboard.keymap(rules: 'evdev', model: 'pc104', layout: 'de', variant: 'nodeadkeys')
   keyboard = Uinput::Keyboard.new(keymap)
-
-  sleep 1
 
   puts keyboard.sys_path
   puts keyboard.dev_path
@@ -14,8 +11,10 @@ begin
   puts symbols.inspect
   puts keyboard.symbols_to_keycodes(*symbols).inspect
 
-  puts keyboard.type('date').inspect
-  puts keyboard.tap(:Return).inspect
+  sleep 0.1 # the window manager needs some time to register the new keyboard
+
+  keyboard.type('date')
+  keyboard.tap(:Return)
 
   #keyboard.type('Ѣ')
   #('a'..'z').each{ |char| keyboard.tap(char) }
